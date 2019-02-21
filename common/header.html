@@ -3,7 +3,6 @@ let tagIconList = settings.tag_icon_list.split('|');
 const { iconHTML } = require("discourse-common/lib/icon-library");
 
 function iconTagRenderer(tag, params) {
-  console.log(tag);
   params = params || {};
   const visibleName = Handlebars.Utils.escapeExpression(tag);
   tag = visibleName.toLowerCase();
