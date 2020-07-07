@@ -1,6 +1,7 @@
 <script type="text/discourse-plugin" version="0.8.29">
   let tagIconList = settings.tag_icon_list.split('|');
   const { iconHTML } = require("discourse-common/lib/icon-library");
+  const getURL = require('discourse-common/lib/get-url').default;
 
   function iconTagRenderer(tag, params) {
     params = params || {};
@@ -19,7 +20,7 @@
         path = `/tag/${tag}`;
       }
     }
-    const href = path ? ` href='${Discourse.getURL(path)}' ` : "";
+    const href = path ? ` href='${getURL(path)}' ` : "";
 
     if (Discourse.SiteSettings.tag_style || params.style) {
       classes.push(params.style || Discourse.SiteSettings.tag_style);
