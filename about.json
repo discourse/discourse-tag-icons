@@ -1,6 +1,6 @@
 {
 	"name": "Tag Icons",
-	"about_url": "https://github.com/pmusaraj/discourse-tag-icons",
-	"license_url": "https://github.com/pmusaraj/discourse-tag-icons/blob/master/LICENSE",
-	"component": "true"
+	"about_url": "https://github.com/discourse/discourse-tag-icons",
+	"license_url": "https://github.com/discourse/discourse-tag-icons/blob/main/LICENSE",
+	"component": true
 }
