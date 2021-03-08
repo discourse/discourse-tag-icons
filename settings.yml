@@ -1,7 +1,7 @@
 tag_icon_list:
-  default: "tag1,question-circle,#CC0000|"
-  type: "list"
-  description: 'Enter comma-delimited configuration for tags, in the format "category-slug,icon,iconColor". (Icon color is optional.)'
+  default: ""
+  description: "Hey there now"
+  json_schema: '{ "type": "array", "format": "table", "uniqueItems": true, "items": { "type": "object", "properties": { "tag": { "type": "string", "minLength": 1 }, "icon": { "type": "string", "minLength": 1 }, "color": { "type": "string" } }, "additionalProperties": false } }'
 svg_icons:
   default: "question-circle"
   type: "list"

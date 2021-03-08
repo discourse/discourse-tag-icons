@@ -1,5 +1,11 @@
 <script type="text/discourse-plugin" version="0.8.29">
-  let tagIconList = settings.tag_icon_list.split('|');
+  let tagIconList = null;
+  try {
+    tagIconList = JSON.parse(settings.tag_icon_list);
+  } catch (e) {
+    return false;
+  }
+
   const { iconHTML } = require("discourse-common/lib/icon-library");
   const getURL = require('discourse-common/lib/get-url').default;
 
@@ -27,20 +33,12 @@
     }
 
   	/// Add custom tag icon from theme settings
-    let tagIconItem = tagIconList.find((str) =>
-      str.indexOf(",") > -1
-        ? tag.indexOf(str.substr(0, str.indexOf(","))) > -1
-        : ""
-    );
+    let tagIcon = tagIconList.find((item) => item["tag"] == tag);
   	let tagIconHTML = '';
-  	if (tagIconItem) {
-  		let tagIcon = tagIconItem.split(',');
 
-  		// Ensure exact match
-  		if(tagIcon[0] == tag) {
-  			let itemColor = tagIcon[2] ? `style="color: ${tagIcon[2]}"` : "";
-  			tagIconHTML = `<span ${itemColor} class="tag-icon">${iconHTML(tagIcon[1])}</span>`;
-  		}
+    if (tagIcon) {
+      let itemColor = tagIcon["color"] ? `style="color: ${tagIcon["color"]}"` : "";
+      tagIconHTML = `<span ${itemColor} class="tag-icon">${iconHTML(tagIcon["icon"])}</span>`;
   	}
   	/// End custom tag icon
 
