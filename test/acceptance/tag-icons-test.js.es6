@@ -7,7 +7,7 @@ acceptance("Topic with tags", function (needs) {
   needs.settings({ tagging_enabled: true });
 
   const topicResponse = topicFixtures["/t/280/1.json"];
-  topicResponse.tags = ["tag1"];
+  topicResponse.tags = ["tag1", "newsman"];
 
   test("Decorate topic title", async function (assert) {
     await visit("/t/internationalization-localization/280");
@@ -25,5 +25,20 @@ acceptance("Topic with tags", function (needs) {
       "rgb(204, 0, 0)",
       "tag icon color matches default value"
     );
+  });
+
+  test("Tag icon exact matches only", async function (assert) {
+    settings.tag_icon_list = "news,question-circle|newsman,cog";
+
+    await visit("/t/internationalization-localization/280");
+
+    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
+    assert.ok(
+      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
+      "it has tag icon"
+    );
+
+    const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
+    assert.ok(el.classList.contains("d-icon-cog"), "tag matches correct icon");
   });
 });
