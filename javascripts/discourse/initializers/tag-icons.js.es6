@@ -3,10 +3,9 @@ import { iconHTML } from "discourse-common/lib/icon-library";
 import getURL from "discourse-common/lib/get-url";
 import Handlebars from "handlebars";
 import { helperContext } from "discourse-common/lib/helpers";
-import User from 'discourse/models/user';
 
 function iconTagRenderer(tag, params) {
-  let siteSettings = helperContext().siteSettings;
+  let { siteSettings, currentUser } = helperContext();
   let tagIconList = settings.tag_icon_list.split("|");
 
   params = params || {};
@@ -17,10 +16,10 @@ function iconTagRenderer(tag, params) {
   const tagName = params.tagName || "a";
   let path;
   if (tagName === "a" && !params.noHref) {
-    if (params.isPrivateMessage && User.current()) {
+    if (params.isPrivateMessage && currentUser) {
       const username = params.tagsForUser
         ? params.tagsForUser
-        : User.current().username;
+        : currentUser.username;
       path = `/u/${username}/messages/tags/${tag}`;
     } else {
       path = `/tag/${tag}`;
