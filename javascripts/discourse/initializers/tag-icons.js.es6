@@ -52,6 +52,7 @@ function iconTagRenderer(tag, params) {
     href +
     " data-tag-name=" +
     tag +
+    (params.description ? ' title="' + params.description + '" ' : "") +
     " class='" +
     classes.join(" ") +
     "'>" +
