@@ -1,7 +1,7 @@
 tag_icon_list:
   default: "tag1,question-circle,#CC0000|"
   type: "list"
-  description: 'Enter comma-delimited configuration for tags, in the format "category-slug,icon,iconColor". (Icon color is optional.)'
+  description: 'Enter comma-delimited configuration for tags, in the format "tag-slug,icon,iconColor". Icon color is optional.'
 svg_icons:
   default: "question-circle"
   type: "list"
