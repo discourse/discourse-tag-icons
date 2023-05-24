@@ -73,8 +73,24 @@ export default {
   name: "tag-icons",
 
   initialize() {
-    withPluginApi("0.8.31", (api) => {
+    withPluginApi("1.6.0", (api) => {
       api.replaceTagRenderer(iconTagRenderer);
+
+      if (api.registerCustomTagSectionLinkPrefixIcon) {
+        const tagIconList = settings.tag_icon_list.split("|");
+
+        tagIconList.forEach((tagIcon) => {
+          const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+
+          if (tagName && prefixValue) {
+            api.registerCustomTagSectionLinkPrefixIcon({
+              tagName,
+              prefixValue,
+              prefixColor,
+            });
+          }
+        });
+      }
     });
   },
 };
