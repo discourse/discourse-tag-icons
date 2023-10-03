@@ -1,96 +1,100 @@
-import { withPluginApi } from "discourse/lib/plugin-api";
-import { iconHTML } from "discourse-common/lib/icon-library";
-import getURL from "discourse-common/lib/get-url";
-import Handlebars from "handlebars";
-import { helperContext } from "discourse-common/lib/helpers";
+import { withPluginApi } from 'discourse/lib/plugin-api'
+import { iconHTML } from 'discourse-common/lib/icon-library'
+import getURL from 'discourse-common/lib/get-url'
+import Handlebars from 'handlebars'
+import { helperContext } from 'discourse-common/lib/helpers'
 
 function iconTagRenderer(tag, params) {
-  let { siteSettings, currentUser } = helperContext();
-  let tagIconList = settings.tag_icon_list.split("|");
+  let { siteSettings, currentUser } = helperContext()
+  let tagIconList = settings.tag_icon_list.split('|')
 
-  params = params || {};
-  const visibleName = Handlebars.Utils.escapeExpression(tag);
-  tag = visibleName.toLowerCase();
+  params = params || {}
+  const visibleName = Handlebars.Utils.escapeExpression(tag)
+  tag = visibleName.toLowerCase()
 
-  const classes = ["discourse-tag"];
-  const tagName = params.tagName || "a";
-  let path;
-  if (tagName === "a" && !params.noHref) {
+  const classes = ['discourse-tag']
+  const tagName = params.tagName || 'a'
+  let path
+  if (tagName === 'a' && !params.noHref) {
     if (params.isPrivateMessage && currentUser) {
       const username = params.tagsForUser
         ? params.tagsForUser
-        : currentUser.username;
-      path = `/u/${username}/messages/tags/${tag}`;
+        : currentUser.username
+      path = `/u/${username}/messages/tags/${tag}`
     } else {
-      path = `/tag/${tag}`;
+      path = `/tag/${tag}`
     }
   }
-  const href = path ? ` href='${getURL(path)}' ` : "";
+  const href = path ? ` href='${getURL(path)}' ` : ''
   if (siteSettings.tag_style || params.style) {
-    classes.push(params.style || siteSettings.tag_style);
+    classes.push(params.style || siteSettings.tag_style)
+  }
+
+  if (params.extraClass) {
+    classes.push(params.extraClass)
   }
 
   /// Add custom tag icon from theme settings
-  let tagIconItem = tagIconList.find((str) => {
-    return str.indexOf(",") > -1 ? tag === str.substr(0, str.indexOf(",")) : "";
-  });
+  let tagIconItem = tagIconList.find(str => {
+    return str.indexOf(',') > -1 ? tag === str.substr(0, str.indexOf(',')) : ''
+  })
 
-  let tagIconHTML = "";
+  let tagIconHTML = ''
   if (tagIconItem) {
-    let tagIcon = tagIconItem.split(",");
+    let tagIcon = tagIconItem.split(',')
 
-    let itemColor = tagIcon[2] ? `style="color: ${tagIcon[2]}"` : "";
+    let itemColor = tagIcon[2] ? `style="color: ${tagIcon[2]}"` : ''
     tagIconHTML = `<span ${itemColor} class="tag-icon">${iconHTML(
       tagIcon[1]
-    )}</span>`;
+    )}</span>`
   }
   /// End custom tag icon
 
   let val =
-    "<" +
+    '<' +
     tagName +
     href +
-    " data-tag-name=" +
+    ' data-tag-name=' +
     tag +
-    (params.description ? ' title="' + params.description + '" ' : "") +
+    (params.description ? ' title="' + params.description + '" ' : '') +
     " class='" +
-    classes.join(" ") +
+    classes.join(' ') +
     "'>" +
     tagIconHTML + // inject tag Icon in html
     visibleName +
-    "</" +
+    '</' +
     tagName +
-    ">";
+    '>'
 
   if (params.count) {
-    val += " <span class='discourse-tag-count'>x" + params.count + "</span>";
+    val += " <span class='discourse-tag-count'>x" + params.count + '</span>'
   }
 
-  return val;
+  return val
 }
 
 export default {
-  name: "tag-icons",
+  name: 'tag-icons',
 
   initialize() {
-    withPluginApi("1.6.0", (api) => {
-      api.replaceTagRenderer(iconTagRenderer);
+    withPluginApi('1.6.0', api => {
+      api.replaceTagRenderer(iconTagRenderer)
 
       if (api.registerCustomTagSectionLinkPrefixIcon) {
-        const tagIconList = settings.tag_icon_list.split("|");
+        const tagIconList = settings.tag_icon_list.split('|')
 
-        tagIconList.forEach((tagIcon) => {
-          const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+        tagIconList.forEach(tagIcon => {
+          const [tagName, prefixValue, prefixColor] = tagIcon.split(',')
 
           if (tagName && prefixValue) {
             api.registerCustomTagSectionLinkPrefixIcon({
               tagName,
               prefixValue,
               prefixColor,
-            });
+            })
           }
-        });
+        })
       }
-    });
+    })
   },
-};
+}
