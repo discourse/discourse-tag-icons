@@ -30,6 +30,10 @@ function iconTagRenderer(tag, params) {
     classes.push(params.style || siteSettings.tag_style);
   }
 
+  if (params.extraClass) {
+    classes.push(params.extraClass);
+  }
+
   /// Add custom tag icon from theme settings
   let tagIconItem = tagIconList.find((str) => {
     return str.indexOf(",") > -1 ? tag === str.substr(0, str.indexOf(",")) : "";
