@@ -25,14 +25,14 @@ acceptance("Sidebar - Tag icons", function (needs) {
 
     assert.ok(
       exists(
-        `.sidebar-section-link[data-tag-name="tag1"] .prefix-icon.d-icon-wrench`
+        `.sidebar-section-link-wrapper[data-tag-name="tag1"] .prefix-icon.d-icon-wrench`
       ),
       "wrench icon is displayed for tag1 section link's prefix icon"
     );
 
     assert.strictEqual(
       query(
-        `.sidebar-section-link[data-tag-name="tag1"] .sidebar-section-link-prefix`
+        `.sidebar-section-link-wrapper[data-tag-name="tag1"] .sidebar-section-link-prefix`
       ).style.color,
       "rgb(255, 0, 0)",
       `tag1 section link's prefix icon has the right color`
@@ -40,14 +40,14 @@ acceptance("Sidebar - Tag icons", function (needs) {
 
     assert.ok(
       exists(
-        `.sidebar-section-link[data-tag-name="tag2"] .prefix-icon.d-icon-question-circle`
+        `.sidebar-section-link-wrapper[data-tag-name="tag2"] .prefix-icon.d-icon-question-circle`
       ),
       `question-circle icon is displayed for tag2 section link's prefix icon`
     );
 
     assert.strictEqual(
       query(
-        `.sidebar-section-link[data-tag-name="tag2"] .sidebar-section-link-prefix`
+        `.sidebar-section-link-wrapper[data-tag-name="tag2"] .sidebar-section-link-prefix`
       ).style.color,
       "rgb(255, 255, 255)",
       `tag2 section link's prefix icon has the right color`
