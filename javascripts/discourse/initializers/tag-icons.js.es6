@@ -1,5 +1,6 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { iconHTML } from "discourse-common/lib/icon-library";
+import escape from "discourse-common/lib/escape";
 import getURL from "discourse-common/lib/get-url";
 import Handlebars from "handlebars";
 import { helperContext } from "discourse-common/lib/helpers";
@@ -16,7 +17,7 @@ function iconTagRenderer(tag, params) {
   const tagName = params.tagName || "a";
   let path;
   if (tagName === "a" && !params.noHref) {
-    if (params.isPrivateMessage && currentUser) {
+    if ((params.isPrivateMessage || params.pmOnly) && currentUser) {
       const username = params.tagsForUser
         ? params.tagsForUser
         : currentUser.username;
@@ -33,6 +34,14 @@ function iconTagRenderer(tag, params) {
   if (params.extraClass) {
     classes.push(params.extraClass);
   }
+
+  if (params.size) {
+    classes.push(params.size);
+  }
+
+  // remove all html tags from hover text
+  const hoverDescription =
+    params.description && params.description.replace(/<.+?>/g, "");
 
   /// Add custom tag icon from theme settings
   let tagIconItem = tagIconList.find((str) => {
@@ -56,12 +65,12 @@ function iconTagRenderer(tag, params) {
     href +
     " data-tag-name=" +
     tag +
-    (params.description ? ' title="' + params.description + '" ' : "") +
+    (params.description ? ' title="' + escape(hoverDescription) + '" ' : "") +
     " class='" +
     classes.join(" ") +
     "'>" +
     tagIconHTML + // inject tag Icon in html
-    visibleName +
+    (params.displayName ? escape(params.displayName) : visibleName) +
     "</" +
     tagName +
     ">";
