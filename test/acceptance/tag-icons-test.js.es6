@@ -4,10 +4,10 @@ import { test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
 
 acceptance("Topic with tags", function (needs) {
-  needs.settings({ tagging_enabled: true });
+  needs.settings({ tagging_enabled: true, force_lowercase_tags: false });
 
   const topicResponse = topicFixtures["/t/280/1.json"];
-  topicResponse.tags = ["tag1", "newsman"];
+  topicResponse.tags = ["tag1", "newsman", "Tag2"];
 
   test("Decorate topic title", async function (assert) {
     await visit("/t/internationalization-localization/280");
@@ -40,5 +40,20 @@ acceptance("Topic with tags", function (needs) {
 
     const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
     assert.ok(el.classList.contains("d-icon-cog"), "tag matches correct icon");
+  });
+
+  test("Tag uppercase matches", async function (assert) {
+    settings.tag_icon_list = "Tag2,star";
+
+    await visit("/t/internationalization-localization/280");
+
+    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
+    assert.ok(
+      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
+      "it has tag icon"
+    );
+    
+    const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
+    assert.ok(el.classList.contains("d-icon-star"), "tag matches correct icon");
   });
 });
