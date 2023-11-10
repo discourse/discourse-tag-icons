@@ -46,7 +46,9 @@ function iconTagRenderer(tag, params) {
 
   /// Add custom tag icon from theme settings
   let tagIconItem = tagIconList.find((str) => {
-    return str.indexOf(",") > -1 ? tag === str.substr(0, str.indexOf(",")).toLowerCase() : "";
+    return str.indexOf(",") > -1
+      ? tag === str.substr(0, str.indexOf(",")).toLowerCase()
+      : "";
   });
 
   let tagIconHTML = "";
