@@ -63,7 +63,7 @@ acceptance("Topic with tags", function (needs) {
       queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
       "it has tag icon"
     );
-    
+
     const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
     assert.ok(el.classList.contains("d-icon-star"), "tag matches correct icon");
   });
