@@ -1,10 +1,10 @@
+import { visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
   acceptance,
   exists,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
-import { visit } from "@ember/test-helpers";
 
 acceptance("Sidebar - Tag icons", function (needs) {
   needs.user({

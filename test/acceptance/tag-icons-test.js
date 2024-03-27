@@ -1,7 +1,7 @@
-import { acceptance, queryAll } from "discourse/tests/helpers/qunit-helpers";
 import { visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
+import { acceptance, queryAll } from "discourse/tests/helpers/qunit-helpers";
 
 acceptance("Topic with tags", function (needs) {
   needs.settings({ tagging_enabled: true });
