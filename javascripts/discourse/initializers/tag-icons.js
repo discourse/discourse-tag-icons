@@ -1,9 +1,9 @@
+import Handlebars from "handlebars";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { iconHTML } from "discourse-common/lib/icon-library";
 import escape from "discourse-common/lib/escape";
 import getURL from "discourse-common/lib/get-url";
-import Handlebars from "handlebars";
 import { helperContext } from "discourse-common/lib/helpers";
+import { iconHTML } from "discourse-common/lib/icon-library";
 
 function iconTagRenderer(tag, params) {
   let { siteSettings, currentUser } = helperContext();
