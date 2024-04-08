@@ -7,7 +7,7 @@ acceptance("Topic with tags", function (needs) {
   needs.settings({ tagging_enabled: true, force_lowercase_tags: false });
 
   const topicResponse = topicFixtures["/t/280/1.json"];
-  topicResponse.tags = ["tag1", "newsman"];
+  topicResponse.tags = ["tag1", "Tag2", "newsman"];
   topicResponse.tags_descriptions = {
     newsman: "newsman <a href='test'>link</a>",
   };
