@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import TagHashtagType from "discourse/lib/hashtag-types/tag";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import escape from "discourse-common/lib/escape";
 import getURL from "discourse-common/lib/get-url";
@@ -82,10 +83,33 @@ function iconTagRenderer(tag, params) {
   return val;
 }
 
+class TagHashtagTypeWithIcon extends TagHashtagType {
+  constructor(dict, owner) {
+    super(owner);
+    this.dict = dict;
+  }
+  generateIconHTML(hashtag) {
+    const opt = hashtag.slug && this.dict[hashtag.slug];
+    if (opt) {
+      const newIcon = document.createElement("span");
+      newIcon.classList.add("hashtag-tag-icon");
+      newIcon.innerHTML = iconHTML(opt.icon);
+      if (opt.color) {
+        newIcon.style.color = opt.color;
+      }
+      return newIcon.outerHTML;
+    } else {
+      return iconHTML(hashtag.icon, {
+        class: `hashtag-color--${this.type}-${hashtag.id}`,
+      });
+    }
+  }
+}
+
 export default {
   name: "tag-icons",
 
-  initialize() {
+  initialize(owner) {
     withPluginApi("1.6.0", (api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
@@ -113,25 +137,11 @@ export default {
         }
       });
 
-      if (settings.render_tag_icon_in_post) {
-        api.decorateCookedElement((elem) => {
-          const tagHashtags = elem.querySelectorAll(
-            '.hashtag-cooked[data-type="tag"]'
-          );
-          for (const hashtag of tagHashtags) {
-            const opt = tagsMap[hashtag.dataset?.slug?.toLowerCase()];
-            if (!opt) {
-              continue;
-            }
-            const newIcon = document.createElement("span");
-            newIcon.classList.add("hashtag-tag-icon");
-            newIcon.innerHTML = iconHTML(opt.icon);
-            if (opt.color) {
-              newIcon.style.color = opt.color;
-            }
-            hashtag.querySelector("svg.d-icon-tag")?.replaceWith(newIcon);
-          }
-        });
+      if (settings.render_tag_icon_in_post && api.registerHashtagType) {
+        api.registerHashtagType(
+          "tag",
+          new TagHashtagTypeWithIcon(tagsMap, owner)
+        );
       }
     });
   },
