@@ -89,18 +89,47 @@ export default {
     withPluginApi("1.6.0", (api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
-      if (api.registerCustomTagSectionLinkPrefixIcon) {
-        const tagIconList = settings.tag_icon_list.split("|");
+      /** @type {Record<string, {icon: string, color: string?}?>} */
+      const tagsMap = {};
 
-        tagIconList.forEach((tagIcon) => {
-          const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+      const tagIconList = settings.tag_icon_list.split("|");
 
-          if (tagName && prefixValue) {
+      tagIconList.forEach((tagIcon) => {
+        const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+
+        if (tagName && prefixValue) {
+          if (api.registerCustomTagSectionLinkPrefixIcon) {
             api.registerCustomTagSectionLinkPrefixIcon({
               tagName,
               prefixValue,
               prefixColor,
             });
+          }
+
+          tagsMap[tagName] = {
+            icon: prefixValue,
+            color: prefixColor,
+          };
+        }
+      });
+
+      if (settings.render_tag_icon_in_post) {
+        api.decorateCookedElement((elem) => {
+          const tagHashtags = elem.querySelectorAll(
+            '.hashtag-cooked[data-type="tag"]'
+          );
+          for (const hashtag of tagHashtags) {
+            const opt = tagsMap[hashtag.dataset?.slug?.toLowerCase()];
+            if (!opt) {
+              continue;
+            }
+            const newIcon = document.createElement("span");
+            newIcon.classList.add("hashtag-tag-icon");
+            newIcon.innerHTML = iconHTML(opt.icon);
+            if (opt.color) {
+              newIcon.style.color = opt.color;
+            }
+            hashtag.querySelector("svg.d-icon-tag")?.replaceWith(newIcon);
           }
         });
       }
