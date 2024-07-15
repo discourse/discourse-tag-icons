@@ -99,9 +99,7 @@ class TagHashtagTypeWithIcon extends TagHashtagType {
       }
       return newIcon.outerHTML;
     } else {
-      return iconHTML(hashtag.icon, {
-        class: `hashtag-color--${this.type}-${hashtag.id}`,
-      });
+      return super.generateIconHTML(hashtag);
     }
   }
 }
