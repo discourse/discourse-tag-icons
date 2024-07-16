@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import TagHashtagType from "discourse/lib/hashtag-types/tag";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import escape from "discourse-common/lib/escape";
 import getURL from "discourse-common/lib/get-url";
@@ -82,27 +83,63 @@ function iconTagRenderer(tag, params) {
   return val;
 }
 
+class TagHashtagTypeWithIcon extends TagHashtagType {
+  constructor(dict, owner) {
+    super(owner);
+    this.dict = dict;
+  }
+  generateIconHTML(hashtag) {
+    const opt = hashtag.slug && this.dict[hashtag.slug];
+    if (opt) {
+      const newIcon = document.createElement("span");
+      newIcon.classList.add("hashtag-tag-icon");
+      newIcon.innerHTML = iconHTML(opt.icon);
+      if (opt.color) {
+        newIcon.style.color = opt.color;
+      }
+      return newIcon.outerHTML;
+    } else {
+      return super.generateIconHTML(hashtag);
+    }
+  }
+}
+
 export default {
   name: "tag-icons",
 
-  initialize() {
+  initialize(owner) {
     withPluginApi("1.6.0", (api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
-      if (api.registerCustomTagSectionLinkPrefixIcon) {
-        const tagIconList = settings.tag_icon_list.split("|");
+      /** @type {Record<string, {icon: string, color: string?}?>} */
+      const tagsMap = {};
 
-        tagIconList.forEach((tagIcon) => {
-          const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+      const tagIconList = settings.tag_icon_list.split("|");
 
-          if (tagName && prefixValue) {
+      tagIconList.forEach((tagIcon) => {
+        const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+
+        if (tagName && prefixValue) {
+          if (api.registerCustomTagSectionLinkPrefixIcon) {
             api.registerCustomTagSectionLinkPrefixIcon({
               tagName,
               prefixValue,
               prefixColor,
             });
           }
-        });
+
+          tagsMap[tagName] = {
+            icon: prefixValue,
+            color: prefixColor,
+          };
+        }
+      });
+
+      if (api.registerHashtagType) {
+        api.registerHashtagType(
+          "tag",
+          new TagHashtagTypeWithIcon(tagsMap, owner)
+        );
       }
     });
   },
