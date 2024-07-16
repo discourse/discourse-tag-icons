@@ -2,9 +2,6 @@ tag_icon_list:
   default: "tag1,question-circle,#CC0000|"
   type: "list"
   description: 'Enter comma-delimited configuration for tags, in the format "tag-slug,icon,iconColor". Icon color is optional.'
-render_tag_icon_in_post:
-  default: true
-  description: "Show tag icons in the post body"
 svg_icons:
   default: "question-circle"
   type: "list"

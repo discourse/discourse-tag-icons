@@ -135,7 +135,7 @@ export default {
         }
       });
 
-      if (settings.render_tag_icon_in_post && api.registerHashtagType) {
+      if (api.registerHashtagType) {
         api.registerHashtagType(
           "tag",
           new TagHashtagTypeWithIcon(tagsMap, owner)
