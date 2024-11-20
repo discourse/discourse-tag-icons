@@ -88,6 +88,7 @@ class TagHashtagTypeWithIcon extends TagHashtagType {
     super(owner);
     this.dict = dict;
   }
+
   generateIconHTML(hashtag) {
     const opt = hashtag.slug && this.dict[hashtag.slug];
     if (opt) {
