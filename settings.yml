@@ -1,7 +1,7 @@
 tag_icon_list:
-  default: "tag1,question-circle,#CC0000|"
+  default: "tag1,circle-question,#CC0000|"
   type: "list"
 svg_icons:
-  default: "question-circle"
+  default: "circle-question"
   type: "list"
   list_type: "compact"
