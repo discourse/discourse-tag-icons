@@ -24,5 +24,23 @@ module(
       );
       assert.deepEqual(Array.from(result), Array.from(expectedResult));
     });
+
+    test("migrate empty settings", function (assert) {
+      const settings = new Map(Object.entries({}));
+      const result = migrate(settings);
+      assert.deepEqual(Array.from(result), Array.from(settings));
+    });
+
+    test("migrate same settings", function (assert) {
+      const settings = new Map(
+        Object.entries({
+          tag_icon_list:
+            "tag1,fab-facebook|tag2,fab-twitter,#CC0011|tag3,fab-gear,#CC0012|tag4,user-group",
+          svg_icons: "fab-facebook|fab-twitter|fab-gear|user-group",
+        })
+      );
+      const result = migrate(settings);
+      assert.deepEqual(Array.from(result), Array.from(settings));
+    });
   }
 );

@@ -18,7 +18,7 @@ export default function migrate(settings) {
   settingNames.forEach((settingName) => {
     const oldSetting = settings.get(settingName);
     if (!oldSetting) {
-      return;
+      return settings;
     }
     const newSetting = oldSetting
       .split("|")
@@ -26,7 +26,7 @@ export default function migrate(settings) {
       .join("|");
 
     if (oldSetting === newSetting) {
-      return;
+      return settings;
     }
     settings.set(settingName, newSetting);
   });
