@@ -17,7 +17,7 @@ acceptance("Sidebar - Tag icons", function (needs) {
   });
 
   needs.hooks.beforeEach(() => {
-    settings.tag_icon_list = `tag1,wrench,#FF0000|tag2,question-circle,#FFF`;
+    settings.tag_icon_list = `tag1,wrench,#FF0000|tag2,circle-question,#FFF`;
   });
 
   test("Icon for tag when `tag_icon_list` theme setting has been configured", async function (assert) {
@@ -40,9 +40,9 @@ acceptance("Sidebar - Tag icons", function (needs) {
 
     assert.ok(
       exists(
-        `.sidebar-section-link-wrapper[data-tag-name="tag2"] .prefix-icon.d-icon-question-circle`
+        `.sidebar-section-link-wrapper[data-tag-name="tag2"] .prefix-icon.d-icon-circle-question`
       ),
-      `question-circle icon is displayed for tag2 section link's prefix icon`
+      `circle-question icon is displayed for tag2 section link's prefix icon`
     );
 
     assert.strictEqual(

@@ -31,7 +31,7 @@ acceptance("Topic with tags", function (needs) {
   });
 
   test("Tag icon exact matches only", async function (assert) {
-    settings.tag_icon_list = "news,question-circle|newsman,cog";
+    settings.tag_icon_list = "news,circle-question|newsman,gear";
 
     await visit("/t/internationalization-localization/280");
 
@@ -42,7 +42,7 @@ acceptance("Topic with tags", function (needs) {
     );
 
     const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
-    assert.ok(el.classList.contains("d-icon-cog"), "tag matches correct icon");
+    assert.ok(el.classList.contains("d-icon-gear"), "tag matches correct icon");
 
     assert
       .dom(".discourse-tag[data-tag-name='newsman']")

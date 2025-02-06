@@ -33,7 +33,7 @@ acceptance("Post body - Tag icons", function (needs) {
   ];
 
   needs.hooks.beforeEach(function () {
-    settings.tag_icon_list = `test-1,wrench,#FF0000|test-2,question-circle`;
+    settings.tag_icon_list = `test-1,wrench,#FF0000|test-2,circle-question`;
   });
 
   needs.pretender((server, helper) => {
@@ -64,9 +64,9 @@ acceptance("Post body - Tag icons", function (needs) {
 
     assert
       .dom(
-        `.cooked .hashtag-cooked[data-id="2"] .hashtag-tag-icon .d-icon-question-circle`
+        `.cooked .hashtag-cooked[data-id="2"] .hashtag-tag-icon .d-icon-circle-question`
       )
-      .exists("question-circle icon is displayed for tag-2");
+      .exists("circle-question icon is displayed for tag-2");
 
     assert
       .dom(`.cooked .hashtag-cooked[data-id="3"] svg.d-icon-tag`)
