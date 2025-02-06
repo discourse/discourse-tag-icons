@@ -1,10 +1,10 @@
 import Handlebars from "handlebars";
+import escape from "discourse/lib/escape";
+import getURL from "discourse/lib/get-url";
 import TagHashtagType from "discourse/lib/hashtag-types/tag";
+import { helperContext } from "discourse/lib/helpers";
+import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import escape from "discourse-common/lib/escape";
-import getURL from "discourse-common/lib/get-url";
-import { helperContext } from "discourse-common/lib/helpers";
-import { iconHTML } from "discourse-common/lib/icon-library";
 
 function iconTagRenderer(tag, params) {
   let { siteSettings, currentUser } = helperContext();
