@@ -1,8 +1,8 @@
 import Handlebars from "handlebars";
-import { helperContext } from "discourse/lib/helpers";
 import escape from "discourse/lib/escape";
 import getURL from "discourse/lib/get-url";
 import TagHashtagType from "discourse/lib/hashtag-types/tag";
+import { helperContext } from "discourse/lib/helpers";
 import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 

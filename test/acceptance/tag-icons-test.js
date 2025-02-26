@@ -31,7 +31,7 @@ acceptance("Topic with tags", function (needs) {
   });
 
   test("Tag icon exact matches only", async function (assert) {
-    settings.tag_icon_list = "news,circle-question|newsman,gear";
+    settings.tag_icon_list = "news,question-circle|newsman,gear";
 
     await visit("/t/internationalization-localization/280");
 
