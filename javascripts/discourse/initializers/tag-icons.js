@@ -1,17 +1,17 @@
-import Handlebars from "handlebars";
 import escape from "discourse/lib/escape";
 import getURL from "discourse/lib/get-url";
 import TagHashtagType from "discourse/lib/hashtag-types/tag";
 import { helperContext } from "discourse/lib/helpers";
 import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { escapeExpression } from "discourse/lib/utilities";
 
 function iconTagRenderer(tag, params) {
   let { siteSettings, currentUser } = helperContext();
   let tagIconList = settings.tag_icon_list.split("|");
 
   params = params || {};
-  const visibleName = Handlebars.Utils.escapeExpression(tag);
+  const visibleName = escapeExpression(tag);
   tag = visibleName.toLowerCase();
 
   const classes = ["discourse-tag"];
