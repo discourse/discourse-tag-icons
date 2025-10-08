@@ -111,7 +111,7 @@ export default {
   name: "tag-icons",
 
   initialize(owner) {
-    withPluginApi("1.6.0", (api) => {
+    withPluginApi((api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
       /** @type {Record<string, {icon: string, color: string?}?>} */
