@@ -22,7 +22,8 @@ function iconTagRenderer(tag, params) {
     const [, iconName, color1, color2] = tagIconItem.split(",");
 
     const parser = new DOMParser();
-    const tagElement = parser.parseFromString(renderedTag, "text/html").body.firstChild;
+    const tagElement = parser.parseFromString(renderedTag, "text/html").body
+      .firstChild;
     const iconElement = parser.parseFromString(
       `<span class="tag-icon">${iconHTML(iconName)}</span>`,
       "text/html"
@@ -91,7 +92,7 @@ export default {
             });
           }
 
-          // Everywhere else; 
+          // Everywhere else;
           tagsMap[tagName] = {
             icon,
             color,
