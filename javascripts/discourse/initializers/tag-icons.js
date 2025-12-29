@@ -29,7 +29,7 @@ function iconTagRenderer(tag, params) {
     ).body.firstChild;
 
     tagElement.prepend(iconElement);
-    tagElement.classList.add("colored-tag");
+    tagElement.classList.add("discourse-tag--colored");
     tagElement.style.setProperty("--color1", color1 ?? "inherit");
     tagElement.style.setProperty("--color2", color2 ?? "inherit");
 

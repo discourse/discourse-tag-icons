@@ -7,7 +7,7 @@
   vertical-align: middle;
 }
 
-.discourse-tag.colored-tag {
+.discourse-tag--colored {
   &.simple {
     color: var(--color1, --tag-text-color);
   }
