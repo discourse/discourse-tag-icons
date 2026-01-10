@@ -7,21 +7,31 @@
   vertical-align: middle;
 }
 
-.discourse-tag--tag-icons-style {
-  &.simple {
-    color: var(--color1, --tag-text-color);
-  }
-
-  &.bullet {
-    color: var(--color1, --tag-text-color);
-  }
-
-  &.box {
-    color: var(--color2, --tag-text-color);
-    background: var(--color1, --primary-low);
-  }
+.hashtag-cooked .hashtag-tag-icon .d-icon {
+  color: var(--color1, var(--primary));
 }
 
-.hashtag-cooked:has(.hashtag-tag-icon) {
-  color: var(--color1, --d-sidebar-link-icon-color);
+.discourse-tag--tag-icons-style .tag-icon {
+  color: var(--color1, var(--tag-text-color));
+}
+
+@if $enable_colors_for_tag_labels == "true" {
+  .discourse-tag--tag-icons-style {
+    &.simple {
+      color: var(--color1, var(--tag-text-color));
+    }
+
+    &.bullet {
+      color: var(--color1, var(--tag-text-color));
+    }
+
+    &.box {
+      color: var(--color2, var(--tag-text-color));
+      background-color: var(--color1, var(--primary-low));
+
+      .tag-icon {
+        color: inherit;
+      }
+    }
+  }
 }

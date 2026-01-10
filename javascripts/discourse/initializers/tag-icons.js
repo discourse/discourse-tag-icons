@@ -2,6 +2,7 @@ import TagHashtagType from "discourse/lib/hashtag-types/tag";
 import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { defaultRenderTag } from "discourse/lib/render-tag";
+import { contrastColor } from "../lib/colors";
 
 function iconTagRenderer(tag, params) {
   // Get the rendered default tag markup.
@@ -19,7 +20,7 @@ function iconTagRenderer(tag, params) {
 
   // Update the tag markup with an SVG icon, and inline-styles for the colors.
   if (tagIconItem) {
-    const [, iconName, color1, color2] = tagIconItem.split(",");
+    const [, iconName, color] = tagIconItem.split(",");
 
     const parser = new DOMParser();
     const tagElement = parser.parseFromString(renderedTag, "text/html").body
@@ -31,8 +32,8 @@ function iconTagRenderer(tag, params) {
 
     tagElement.prepend(iconElement);
     tagElement.classList.add("discourse-tag--tag-icons-style");
-    tagElement.style.setProperty("--color1", color1 ?? "inherit");
-    tagElement.style.setProperty("--color2", color2 ?? "inherit");
+    tagElement.style.setProperty("--color1", color ?? "");
+    tagElement.style.setProperty("--color2", color ? contrastColor(color) : "");
 
     return tagElement.outerHTML;
   }
@@ -56,7 +57,11 @@ class TagHashtagTypeWithIcon extends TagHashtagType {
       newIcon.classList.add("hashtag-tag-icon");
       newIcon.innerHTML = svgIcon;
       if (opt.color) {
-        newIcon.style.color = opt.color;
+        newIcon.style.setProperty("--color1", opt.color ?? "");
+        newIcon.style.setProperty(
+          "--color2",
+          opt.color ? contrastColor(opt.color) : ""
+        );
       }
       return newIcon.outerHTML;
     }
@@ -74,34 +79,30 @@ export default {
     withPluginApi((api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
-      /** @type {Record<string, { icon: string; color?: string; backgroundColor?: string; }?>} */
+      /** @type {Record<string, { icon: string, color?: string }>} */
       const tagsMap = {};
 
       const tagIconList = settings.tag_icon_list.split("|");
 
       tagIconList.forEach((tagIcon) => {
-        const [tagName, icon, color, backgroundColor] = tagIcon.split(",");
+        const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
 
-        if (tagName && icon) {
-          // Sidebar section links
+        if (tagName && prefixValue) {
           if (api.registerCustomTagSectionLinkPrefixIcon) {
             api.registerCustomTagSectionLinkPrefixIcon({
               tagName,
-              prefixValue: icon,
-              prefixColor: color,
+              prefixValue,
+              prefixColor,
             });
           }
 
-          // Everywhere else;
           tagsMap[tagName] = {
-            icon,
-            color,
-            backgroundColor,
+            icon: prefixValue,
+            color: prefixColor,
           };
         }
       });
 
-      // Mentions.
       if (api.registerHashtagType) {
         api.registerHashtagType(
           "tag",
