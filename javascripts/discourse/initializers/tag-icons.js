@@ -11,13 +11,16 @@ function iconTagRenderer(tag, params) {
   let tagIconList = settings.tag_icon_list.split("|");
 
   params = params || {};
-  const visibleName = escapeExpression(tag);
+  // TODO(https://github.com/discourse/discourse/pull/36678): The string check can be
+  // removed using .discourse-compatibility once the PR is merged.
+  const tagStr = typeof tag === "string" ? tag : tag.name;
+  const visibleName = escapeExpression(tagStr);
   tag = visibleName.toLowerCase();
 
   const classes = ["discourse-tag"];
-  const tagName = params.tagName || "a";
+  const htmlTagName = params.tagName || "a";
   let path;
-  if (tagName === "a" && !params.noHref) {
+  if (htmlTagName === "a" && !params.noHref) {
     if ((params.isPrivateMessage || params.pmOnly) && currentUser) {
       const username = params.tagsForUser
         ? params.tagsForUser
@@ -64,7 +67,7 @@ function iconTagRenderer(tag, params) {
 
   let val =
     "<" +
-    tagName +
+    htmlTagName +
     href +
     " data-tag-name=" +
     tag +
@@ -75,7 +78,7 @@ function iconTagRenderer(tag, params) {
     tagIconHTML + // inject tag Icon in html
     (params.displayName ? escape(params.displayName) : visibleName) +
     "</" +
-    tagName +
+    htmlTagName +
     ">";
 
   if (params.count) {
