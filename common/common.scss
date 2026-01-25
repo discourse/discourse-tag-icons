@@ -33,5 +33,21 @@
         color: inherit;
       }
     }
+
+    .select-kit .select-kit-row &,
+    .select-kit .select-kit-row &:visited,
+    .select-kit .select-kit-row &:hover {
+      &.simple {
+        color: var(--color1, var(--primary-high));
+      }
+
+      &.bullet {
+        color: var(--color1, var(--primary-high));
+      }
+
+      &.box {
+        color: var(--color2, var(--primary-high));
+      }
+    }
   }
 }
