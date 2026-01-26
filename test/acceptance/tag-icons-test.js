@@ -25,7 +25,7 @@ acceptance("Topic with tags", function (needs) {
 
     assert.equal(
       window.getComputedStyle(el).color,
-      "rgb(204, 0, 0)",
+      "rgb(100, 100, 100)",
       "tag icon color matches default value"
     );
   });

@@ -57,10 +57,7 @@ acceptance("Post body - Tag icons", function (needs) {
 
     assert
       .dom(`.cooked .hashtag-cooked[data-id="1"] .hashtag-tag-icon`)
-      .hasStyle(
-        { color: "rgb(255, 0, 0)" },
-        "tag-1 's icon has the right color"
-      );
+      .hasStyle({ "--color1": "#FF0000" }, "tag-1 's icon has the right color");
 
     assert
       .dom(

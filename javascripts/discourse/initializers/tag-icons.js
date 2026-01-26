@@ -1,91 +1,44 @@
-import escape from "discourse/lib/escape";
-import getURL from "discourse/lib/get-url";
 import TagHashtagType from "discourse/lib/hashtag-types/tag";
-import { helperContext } from "discourse/lib/helpers";
 import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { escapeExpression } from "discourse/lib/utilities";
+import { defaultRenderTag } from "discourse/lib/render-tag";
+import { contrastColor } from "../lib/colors";
 
 function iconTagRenderer(tag, params) {
-  let { siteSettings, currentUser } = helperContext();
-  let tagIconList = settings.tag_icon_list.split("|");
+  // Get the rendered default tag markup.
+  const renderedTag = defaultRenderTag(tag, params);
 
-  params = params || {};
-  // TODO(https://github.com/discourse/discourse/pull/36678): The string check can be
-  // removed using .discourse-compatibility once the PR is merged.
-  const tagStr = typeof tag === "string" ? tag : tag.name;
-  const visibleName = escapeExpression(tagStr);
-  tag = visibleName.toLowerCase();
+  // Get the tag configuration list from the settings.
+  const tagIconList = settings.tag_icon_list.split("|");
 
-  const classes = ["discourse-tag"];
-  const htmlTagName = params.tagName || "a";
-  let path;
-  if (htmlTagName === "a" && !params.noHref) {
-    if ((params.isPrivateMessage || params.pmOnly) && currentUser) {
-      const username = params.tagsForUser
-        ? params.tagsForUser
-        : currentUser.username;
-      path = `/u/${username}/messages/tags/${tag}`;
-    } else {
-      path = `/tag/${tag}`;
-    }
-  }
-  const href = path ? ` href='${getURL(path)}' ` : "";
-  if (siteSettings.tag_style || params.style) {
-    classes.push(params.style || siteSettings.tag_style);
-  }
+  // Returns the tag configuration if found.
+  const tagIconItem = tagIconList.find(
+    (line) =>
+      line.indexOf(",") > -1 &&
+      tag.toLowerCase() === line.substr(0, line.indexOf(",")).toLowerCase()
+  );
 
-  if (params.extraClass) {
-    classes.push(params.extraClass);
-  }
-
-  if (params.size) {
-    classes.push(params.size);
-  }
-
-  // remove all html tags from hover text
-  const hoverDescription =
-    params.description && params.description.replace(/<.+?>/g, "");
-
-  /// Add custom tag icon from theme settings
-  let tagIconItem = tagIconList.find((str) => {
-    return str.indexOf(",") > -1
-      ? tag === str.substr(0, str.indexOf(",")).toLowerCase()
-      : "";
-  });
-
-  let tagIconHTML = "";
+  // Update the tag markup with an SVG icon, and inline-styles for the colors.
   if (tagIconItem) {
-    let tagIcon = tagIconItem.split(",");
+    const [, iconName, color] = tagIconItem.split(",");
 
-    let itemColor = tagIcon[2] ? `style="color: ${tagIcon[2]}"` : "";
-    tagIconHTML = `<span ${itemColor} class="tag-icon">${iconHTML(
-      tagIcon[1]
-    )}</span>`;
-  }
-  /// End custom tag icon
+    const parser = new DOMParser();
+    const tagElement = parser.parseFromString(renderedTag, "text/html").body
+      .firstChild;
+    const iconElement = parser.parseFromString(
+      `<span class="tag-icon">${iconHTML(iconName)}</span>`,
+      "text/html"
+    ).body.firstChild;
 
-  let val =
-    "<" +
-    htmlTagName +
-    href +
-    " data-tag-name=" +
-    tag +
-    (params.description ? ' title="' + escape(hoverDescription) + '" ' : "") +
-    " class='" +
-    classes.join(" ") +
-    "'>" +
-    tagIconHTML + // inject tag Icon in html
-    (params.displayName ? escape(params.displayName) : visibleName) +
-    "</" +
-    htmlTagName +
-    ">";
+    tagElement.prepend(iconElement);
+    tagElement.classList.add("discourse-tag--tag-icons-style");
+    tagElement.style.setProperty("--color1", color ?? "");
+    tagElement.style.setProperty("--color2", color ? contrastColor(color) : "");
 
-  if (params.count) {
-    val += " <span class='discourse-tag-count'>x" + params.count + "</span>";
+    return tagElement.outerHTML;
   }
 
-  return val;
+  return renderedTag;
 }
 
 class TagHashtagTypeWithIcon extends TagHashtagType {
@@ -97,27 +50,36 @@ class TagHashtagTypeWithIcon extends TagHashtagType {
   generateIconHTML(hashtag) {
     const opt = hashtag.slug && this.dict[hashtag.slug];
     if (opt) {
+      const svgIcon = iconHTML(opt.icon, {
+        class: `hashtag-color--${this.type}-${hashtag.id}`,
+      });
       const newIcon = document.createElement("span");
       newIcon.classList.add("hashtag-tag-icon");
-      newIcon.innerHTML = iconHTML(opt.icon);
+      newIcon.innerHTML = svgIcon;
       if (opt.color) {
-        newIcon.style.color = opt.color;
+        newIcon.style.setProperty("--color1", opt.color ?? "");
+        newIcon.style.setProperty(
+          "--color2",
+          opt.color ? contrastColor(opt.color) : ""
+        );
       }
       return newIcon.outerHTML;
-    } else {
-      return super.generateIconHTML(hashtag);
     }
+
+    return super.generateIconHTML(hashtag);
   }
 }
 
 export default {
   name: "tag-icons",
 
+  before: "hashtag-css-generator",
+
   initialize(owner) {
     withPluginApi((api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
-      /** @type {Record<string, {icon: string, color: string?}?>} */
+      /** @type {Record<string, { icon: string, color?: string }>} */
       const tagsMap = {};
 
       const tagIconList = settings.tag_icon_list.split("|");

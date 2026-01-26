@@ -2,4 +2,5 @@ en:
   theme_metadata:
     settings:
       tag_icon_list: 'Enter comma-delimited configuration for tags, in the format "tag-slug,icon,iconColor". Icon color is optional.'
+      enable_colors_for_tag_labels: "Use colors for both tag icon and the tag label based on the configuration set above."
       svg_icons: "List of FontAwesome 6 icons used in this theme component"
