@@ -33,6 +33,7 @@ function iconTagRenderer(tag, params) {
     tagElement.prepend(iconElement);
     tagElement.classList.add("discourse-tag--tag-icons-style");
     tagElement.style.setProperty("--color1", color ?? "");
+
     tagElement.style.setProperty("--color2", color ? contrastColor(color) : "");
 
     return tagElement.outerHTML;
