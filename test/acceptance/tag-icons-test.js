@@ -67,4 +67,16 @@ acceptance("Topic with tags", function (needs) {
     const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
     assert.ok(el.classList.contains("d-icon-star"), "tag matches correct icon");
   });
+
+  test("Ensure non-HEX colors do not throw an error", async function (assert) {
+    settings.tag_icon_list = "Tag2,star,rgba(0,0,0)";
+
+    await visit("/t/internationalization-localization/280");
+
+    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
+    assert.ok(
+      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
+      "it has tag icon"
+    );
+  });
 });

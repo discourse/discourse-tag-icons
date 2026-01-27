@@ -33,12 +33,26 @@ function iconTagRenderer(tag, params) {
     tagElement.prepend(iconElement);
     tagElement.classList.add("discourse-tag--tag-icons-style");
     tagElement.style.setProperty("--color1", color ?? "");
-    tagElement.style.setProperty("--color2", color ? contrastColor(color) : "");
+
+    tagElement.style.setProperty(
+      "--color2",
+      color ? contrastedColor(color) : ""
+    );
 
     return tagElement.outerHTML;
   }
 
   return renderedTag;
+}
+
+function contrastedColor(value) {
+  if (!/^[0-9a-fA-F]{6}$/.test(value)) {
+    // eslint-disable-next-line no-console
+    console.warn(`Invalid hex color: ${value}`);
+    return false;
+  }
+
+  return contrastColor(value);
 }
 
 class TagHashtagTypeWithIcon extends TagHashtagType {
@@ -60,7 +74,7 @@ class TagHashtagTypeWithIcon extends TagHashtagType {
         newIcon.style.setProperty("--color1", opt.color ?? "");
         newIcon.style.setProperty(
           "--color2",
-          opt.color ? contrastColor(opt.color) : ""
+          opt.color ? contrastedColor(opt.color) : ""
         );
       }
       return newIcon.outerHTML;
