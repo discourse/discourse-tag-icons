@@ -13,6 +13,7 @@ const hexToRgb = (hex) => {
   }
 
   if (!/^[0-9a-fA-F]{6}$/.test(value)) {
+    // eslint-disable-next-line no-console
     console.warn(`Invalid hex color: ${hex}`);
     return false;
   }
@@ -33,6 +34,8 @@ const luminance = (rgb) => {
 
 export const contrastColor = (hexColor) => {
   const rgb = hexToRgb(hexColor);
-  if (!rgb) {return "";}
+  if (!rgb) {
+    return "";
+  }
   return luminance(rgb) >= 0.45 ? "#000d" : "#fffd";
 };
