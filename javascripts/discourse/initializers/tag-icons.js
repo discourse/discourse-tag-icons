@@ -8,6 +8,10 @@ function iconTagRenderer(tag, params) {
   // Get the rendered default tag markup.
   const renderedTag = defaultRenderTag(tag, params);
 
+  // Handle both string tags (legacy) and object tags (new format: { id, name, slug })
+  // This maintains backwards compatibility with Discourse versions before PR #36678
+  const tagName = typeof tag === "string" ? tag : tag.name;
+
   // Get the tag configuration list from the settings.
   const tagIconList = settings.tag_icon_list.split("|");
 
@@ -15,7 +19,7 @@ function iconTagRenderer(tag, params) {
   const tagIconItem = tagIconList.find(
     (line) =>
       line.indexOf(",") > -1 &&
-      tag.toLowerCase() === line.substr(0, line.indexOf(",")).toLowerCase()
+      tagName.toLowerCase() === line.substr(0, line.indexOf(",")).toLowerCase()
   );
 
   // Update the tag markup with an SVG icon, and inline-styles for the colors.
