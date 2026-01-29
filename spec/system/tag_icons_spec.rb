@@ -9,6 +9,7 @@ RSpec.describe "Tag icons" do
   fab!(:user)
 
   let(:topic_page) { PageObjects::Pages::Topic.new }
+  let(:topic_list) { PageObjects::Components::TopicList.new }
   let(:tag_icon) { PageObjects::Components::TagIcon.new }
   let!(:theme) { upload_theme_component }
 
@@ -21,6 +22,16 @@ RSpec.describe "Tag icons" do
 
   it "displays tag with icon on topic page" do
     topic_page.visit_topic(topic)
+    expect(tag_icon).to have_icon_for_tag(
+      tag_name: "support",
+      icon: "question-circle",
+      color: "#ff0000",
+    )
+  end
+
+  it "displays tag with icon on topics list page" do
+    visit "/latest"
+    expect(topic_list).to have_topic(topic)
     expect(tag_icon).to have_icon_for_tag(
       tag_name: "support",
       icon: "question-circle",
