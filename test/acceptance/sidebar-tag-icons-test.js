@@ -1,10 +1,6 @@
 import { visit } from "@ember/test-helpers";
 import { test } from "qunit";
-import {
-  acceptance,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 
 acceptance("Sidebar - Tag icons", function (needs) {
   needs.user({
@@ -23,34 +19,36 @@ acceptance("Sidebar - Tag icons", function (needs) {
   test("Icon for tag when `tag_icon_list` theme setting has been configured", async function (assert) {
     await visit("/");
 
-    assert.ok(
-      exists(
+    assert
+      .dom(
         `.sidebar-section-link-wrapper[data-tag-name="tag1"] .prefix-icon.d-icon-wrench`
-      ),
-      "wrench icon is displayed for tag1 section link's prefix icon"
-    );
+      )
+      .exists("wrench icon is displayed for tag1 section link's prefix icon");
 
-    assert.strictEqual(
-      query(
+    assert
+      .dom(
         `.sidebar-section-link-wrapper[data-tag-name="tag1"] .sidebar-section-link-prefix`
-      ).style.color,
-      "rgb(255, 0, 0)",
-      `tag1 section link's prefix icon has the right color`
-    );
+      )
+      .hasStyle(
+        { color: "rgb(255, 0, 0)" },
+        "tag1 section link's prefix icon has the right color"
+      );
 
-    assert.ok(
-      exists(
+    assert
+      .dom(
         `.sidebar-section-link-wrapper[data-tag-name="tag2"] .prefix-icon.d-icon-circle-question`
-      ),
-      `circle-question icon is displayed for tag2 section link's prefix icon`
-    );
+      )
+      .exists(
+        "circle-question icon is displayed for tag2 section link's prefix icon"
+      );
 
-    assert.strictEqual(
-      query(
+    assert
+      .dom(
         `.sidebar-section-link-wrapper[data-tag-name="tag2"] .sidebar-section-link-prefix`
-      ).style.color,
-      "rgb(255, 255, 255)",
-      `tag2 section link's prefix icon has the right color`
-    );
+      )
+      .hasStyle(
+        { color: "rgb(255, 255, 255)" },
+        "tag2 section link's prefix icon has the right color"
+      );
   });
 });
