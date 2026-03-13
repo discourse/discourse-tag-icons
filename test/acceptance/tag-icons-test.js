@@ -1,7 +1,7 @@
 import { visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
-import { acceptance, queryAll } from "discourse/tests/helpers/qunit-helpers";
+import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 
 acceptance("Topic with tags", function (needs) {
   needs.settings({ tagging_enabled: true, force_lowercase_tags: false });
@@ -15,19 +15,17 @@ acceptance("Topic with tags", function (needs) {
   test("Decorate topic title", async function (assert) {
     await visit("/t/internationalization-localization/280");
 
-    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
-    assert.ok(
-      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
-      "it has tag icon"
-    );
+    assert.dom(".title-wrapper .discourse-tags").exists("has tags");
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon")
+      .exists("has tag icon");
 
-    const el = queryAll(".discourse-tags a.discourse-tag .tag-icon")[0];
-
-    assert.equal(
-      window.getComputedStyle(el).color,
-      "rgb(100, 100, 100)",
-      "tag icon color matches default value"
-    );
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon")
+      .hasStyle(
+        { color: "rgb(100, 100, 100)" },
+        "tag icon color matches default value"
+      );
   });
 
   test("Tag icon exact matches only", async function (assert) {
@@ -35,21 +33,21 @@ acceptance("Topic with tags", function (needs) {
 
     await visit("/t/internationalization-localization/280");
 
-    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
-    assert.ok(
-      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
-      "it has tag icon"
-    );
+    assert.dom(".title-wrapper .discourse-tags").exists("has tags");
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon")
+      .exists("has tag icon");
 
-    const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
-    assert.ok(el.classList.contains("d-icon-gear"), "tag matches correct icon");
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon .d-icon")
+      .hasClass("d-icon-gear", "tag matches correct icon");
 
     assert
       .dom(".discourse-tag[data-tag-name='newsman']")
       .hasAttribute(
         "title",
         "newsman link",
-        "it has correct title without markup"
+        "has correct title without markup"
       );
   });
 
@@ -58,14 +56,14 @@ acceptance("Topic with tags", function (needs) {
 
     await visit("/t/internationalization-localization/280");
 
-    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
-    assert.ok(
-      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
-      "it has tag icon"
-    );
+    assert.dom(".title-wrapper .discourse-tags").exists("has tags");
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon")
+      .exists("has tag icon");
 
-    const el = queryAll(".discourse-tags a.discourse-tag .tag-icon .d-icon")[0];
-    assert.ok(el.classList.contains("d-icon-star"), "tag matches correct icon");
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon .d-icon")
+      .hasClass("d-icon-star", "tag matches correct icon");
   });
 
   test("Ensure non-HEX colors do not throw an error", async function (assert) {
@@ -73,10 +71,9 @@ acceptance("Topic with tags", function (needs) {
 
     await visit("/t/internationalization-localization/280");
 
-    assert.ok(queryAll(".title-wrapper .discourse-tags"), "it has tags");
-    assert.ok(
-      queryAll(".discourse-tags a.discourse-tag .tag-icon").length,
-      "it has tag icon"
-    );
+    assert.dom(".title-wrapper .discourse-tags").exists("has tags");
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon")
+      .exists("has tag icon");
   });
 });
