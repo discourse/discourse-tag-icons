@@ -4,7 +4,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { defaultRenderTag } from "discourse/lib/render-tag";
 import { contrastColor } from "../lib/colors";
 
-function buildIdMap(site) {
+function parseTagIconList() {
   const nameMap = {};
   const tagIconList = settings.tag_icon_list.split("|");
 
@@ -15,6 +15,10 @@ function buildIdMap(site) {
     }
   });
 
+  return nameMap;
+}
+
+function buildIdMap(nameMap, site) {
   const idMap = {};
   const tags = site.top_tags || [];
 
@@ -30,11 +34,18 @@ function buildIdMap(site) {
   return idMap;
 }
 
-function iconTagRenderer(idMap, tag, params) {
-  const renderedTag = defaultRenderTag(tag, params);
+function findConfig(idMap, nameMap, tag) {
+  if (typeof tag === "object") {
+    return idMap[tag.id];
+  }
 
-  const tagId = typeof tag === "object" ? tag.id : null;
-  const tagIconItem = tagId && idMap[tagId];
+  // Legacy fallback: older Discourse versions pass tag as a string
+  return nameMap[tag.toLowerCase()];
+}
+
+function iconTagRenderer(idMap, nameMap, tag, params) {
+  const renderedTag = defaultRenderTag(tag, params);
+  const tagIconItem = findConfig(idMap, nameMap, tag);
 
   if (tagIconItem) {
     const { icon: iconName, color } = tagIconItem;
@@ -95,22 +106,21 @@ export default {
 
   initialize(owner) {
     withPluginApi((api) => {
+      const nameMap = parseTagIconList();
       const site = api.container.lookup("service:site");
-      const idMap = buildIdMap(site);
+      const idMap = buildIdMap(nameMap, site);
 
       api.replaceTagRenderer((tag, params) =>
-        iconTagRenderer(idMap, tag, params)
+        iconTagRenderer(idMap, nameMap, tag, params)
       );
 
       // Register sidebar icons — core API is name-based, use original tag names
-      const tagIconList = settings.tag_icon_list.split("|");
-      tagIconList.forEach((tagIcon) => {
-        const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
-        if (tagName && prefixValue && api.registerCustomTagSectionLinkPrefixIcon) {
+      Object.entries(nameMap).forEach(([tagName, { icon, color }]) => {
+        if (api.registerCustomTagSectionLinkPrefixIcon) {
           api.registerCustomTagSectionLinkPrefixIcon({
             tagName,
-            prefixValue,
-            prefixColor,
+            prefixValue: icon,
+            prefixColor: color,
           });
         }
       });
