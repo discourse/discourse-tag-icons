@@ -106,15 +106,19 @@ export default {
 
   initialize(owner) {
     withPluginApi((api) => {
-      const nameMap = parseTagIconList();
       const site = api.container.lookup("service:site");
+
+      // Re-parse settings on each render so changes are picked up immediately
+      api.replaceTagRenderer((tag, params) => {
+        const nameMap = parseTagIconList();
+        const idMap = buildIdMap(nameMap, site);
+        return iconTagRenderer(idMap, nameMap, tag, params);
+      });
+
+      // Sidebar and hashtag registrations happen once at init time
+      const nameMap = parseTagIconList();
       const idMap = buildIdMap(nameMap, site);
 
-      api.replaceTagRenderer((tag, params) =>
-        iconTagRenderer(idMap, nameMap, tag, params)
-      );
-
-      // Register sidebar icons — core API is name-based, use original tag names
       Object.entries(nameMap).forEach(([tagName, { icon, color }]) => {
         if (api.registerCustomTagSectionLinkPrefixIcon) {
           api.registerCustomTagSectionLinkPrefixIcon({
