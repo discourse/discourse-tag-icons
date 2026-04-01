@@ -29,10 +29,7 @@ RSpec.describe "Tag icons with localized tags" do
     SiteSetting.content_localization_enabled = true
     SiteSetting.content_localization_supported_locales = "en|ja"
 
-    theme.update_setting(
-      :tag_icon_list,
-      "support,question-circle,#ff0000|bug,wrench,#0000ff",
-    )
+    theme.update_setting(:tag_icon_list, "support,question-circle,#ff0000|bug,wrench,#0000ff")
     theme.update_setting(:svg_icons, "question-circle|wrench")
     theme.save!
 
