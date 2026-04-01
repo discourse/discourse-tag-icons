@@ -108,14 +108,12 @@ export default {
     withPluginApi((api) => {
       const site = api.container.lookup("service:site");
 
-      // Re-parse settings on each render so changes are picked up immediately
       api.replaceTagRenderer((tag, params) => {
         const nameMap = parseTagIconList();
         const idMap = buildIdMap(nameMap, site);
         return iconTagRenderer(idMap, nameMap, tag, params);
       });
 
-      // Sidebar and hashtag registrations happen once at init time
       const nameMap = parseTagIconList();
       const idMap = buildIdMap(nameMap, site);
 
