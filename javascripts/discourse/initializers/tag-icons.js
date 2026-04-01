@@ -9,8 +9,7 @@ function iconTagRenderer(tag, params) {
   const renderedTag = defaultRenderTag(tag, params);
 
   // Handle both string tags (legacy) and object tags (new format: { id, name, slug })
-  // This maintains backwards compatibility with Discourse versions before PR #36678
-  const tagName = typeof tag === "string" ? tag : tag.name;
+  const tagName = typeof tag === "string" ? tag : tag.slug || tag.name;
 
   // Get the tag configuration list from the settings.
   const tagIconList = settings.tag_icon_list.split("|");
