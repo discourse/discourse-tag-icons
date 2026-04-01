@@ -1,6 +1,5 @@
 import { visit } from "@ember/test-helpers";
 import { test } from "qunit";
-import { cloneJSON } from "discourse/lib/object";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 
@@ -98,22 +97,24 @@ acceptance("Topic with translated tags", function (needs) {
     top_tags: [{ id: 10, name: "intelligence-artificielle", slug: "ai" }],
   });
 
-  needs.pretender((server, helper) => {
-    server.get("/t/280.json", () => {
-      const topic = cloneJSON(topicFixtures["/t/280/1.json"]);
-      topic.tags = [{ id: 10, name: "intelligence-artificielle", slug: "ai" }];
-      return helper.response(topic);
-    });
+  const topicResponse = topicFixtures["/t/280/1.json"];
+  const originalTags = topicResponse.tags;
+
+  needs.hooks.afterEach(function () {
+    topicResponse.tags = originalTags;
   });
 
-  test("Icon matches by ID when tag name is translated", async function (assert) {
+  test("Displays correct icon for tags with translated names", async function (assert) {
     settings.tag_icon_list = "ai,robot,#5865F2";
+    topicResponse.tags = [
+      { id: 10, name: "intelligence-artificielle", slug: "ai" },
+    ];
 
     await visit("/t/internationalization-localization/280");
 
     assert
       .dom(".discourse-tags a.discourse-tag .tag-icon .d-icon")
-      .hasClass("d-icon-robot", "icon matches via ID despite translated name");
+      .hasClass("d-icon-robot", "correct icon is shown");
 
     assert
       .dom(".discourse-tags a.discourse-tag")

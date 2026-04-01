@@ -20,7 +20,7 @@ function parseTagIconList() {
 
 function buildIdMap(nameMap, site) {
   const idMap = {};
-  const tags = site.top_tags || [];
+  const tags = site.topTags || [];
 
   tags.forEach((tag) => {
     const config =
