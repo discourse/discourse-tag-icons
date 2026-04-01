@@ -1,5 +1,6 @@
 import { visit } from "@ember/test-helpers";
 import { test } from "qunit";
+import { cloneJSON } from "discourse/lib/object";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 
@@ -94,15 +95,16 @@ acceptance("Topic with translated tags", function (needs) {
   needs.settings({ tagging_enabled: true });
 
   needs.site({
-    top_tags: [
-      { id: 10, name: "intelligence-artificielle", slug: "ai" },
-    ],
+    top_tags: [{ id: 10, name: "intelligence-artificielle", slug: "ai" }],
   });
 
-  const topicResponse = topicFixtures["/t/280/1.json"];
-  topicResponse.tags = [
-    { id: 10, name: "intelligence-artificielle", slug: "ai" },
-  ];
+  needs.pretender((server, helper) => {
+    server.get("/t/280.json", () => {
+      const topic = cloneJSON(topicFixtures["/t/280/1.json"]);
+      topic.tags = [{ id: 10, name: "intelligence-artificielle", slug: "ai" }];
+      return helper.response(topic);
+    });
+  });
 
   test("Icon matches by ID when tag name is translated", async function (assert) {
     settings.tag_icon_list = "ai,robot,#5865F2";
