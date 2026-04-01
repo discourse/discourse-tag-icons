@@ -5,7 +5,7 @@ import TopicFixtures from "discourse/tests/fixtures/topic";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 
 function makeHashtagHTML(tag) {
-  return `<a class=\"hashtag-cooked\" href=\"${tag.href}\" data-type=\"tag\" data-slug=\"${tag.slug}\" data-id=\"${tag.id}\"><span class=\"hashtag-icon-placeholder\"><svg class=\"fa d-icon d-icon-square-full svg-icon svg-node\"><use href=\"#square-full\"></use></svg></span><span>${tag.name}</span></a>`;
+  return `<a class="hashtag-cooked" href="${tag.href}" data-type="tag" data-slug="${tag.slug}" data-id="${tag.id}"><span class="hashtag-icon-placeholder"><svg class="fa d-icon d-icon-square-full svg-icon svg-node"><use href="#square-full"></use></svg></span><span>${tag.name}</span></a>`;
 }
 
 acceptance("Post body - Tag icons", function (needs) {
@@ -31,6 +31,14 @@ acceptance("Post body - Tag icons", function (needs) {
       color: "888888",
     },
   ];
+
+  needs.site({
+    top_tags: [
+      { id: 1, name: "test-1", slug: "test-1" },
+      { id: 2, name: "test-2", slug: "test-2" },
+      { id: 3, name: "test-3", slug: "test-3" },
+    ],
+  });
 
   needs.hooks.beforeEach(function () {
     settings.tag_icon_list = `test-1,wrench,#FF0000|test-2,circle-question`;
