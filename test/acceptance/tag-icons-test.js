@@ -7,9 +7,13 @@ acceptance("Topic with tags", function (needs) {
   needs.settings({ tagging_enabled: true, force_lowercase_tags: false });
 
   const topicResponse = topicFixtures["/t/280/1.json"];
-  topicResponse.tags = ["tag1", "Tag2", "newsman"];
+  topicResponse.tags = [
+    { id: 1, name: "étiquette-un", slug: "tag1" },
+    { id: 2, name: "Étiquette-Deux", slug: "tag2" },
+    { id: 3, name: "journaliste", slug: "newsman" },
+  ];
   topicResponse.tags_descriptions = {
-    newsman: "newsman <a href='test'>link</a>",
+    journaliste: "newsman <a href='test'>link</a>",
   };
 
   test("Decorate topic title", async function (assert) {
@@ -43,7 +47,7 @@ acceptance("Topic with tags", function (needs) {
       .hasClass("d-icon-gear", "tag matches correct icon");
 
     assert
-      .dom(".discourse-tag[data-tag-name='newsman']")
+      .dom(".discourse-tag[data-tag-name='journaliste']")
       .hasAttribute(
         "title",
         "newsman link",
@@ -75,5 +79,36 @@ acceptance("Topic with tags", function (needs) {
     assert
       .dom(".discourse-tags a.discourse-tag .tag-icon")
       .exists("has tag icon");
+  });
+});
+
+acceptance("Topic with translated tags", function (needs) {
+  needs.settings({ tagging_enabled: true });
+
+  const topicResponse = topicFixtures["/t/280/1.json"];
+  const originalTags = topicResponse.tags;
+
+  needs.hooks.afterEach(function () {
+    topicResponse.tags = originalTags;
+  });
+
+  test("Displays correct icon for tags with translated names", async function (assert) {
+    settings.tag_icon_list = "ai,robot,#5865F2";
+    topicResponse.tags = [
+      { id: 10, name: "intelligence-artificielle", slug: "ai" },
+    ];
+
+    await visit("/t/internationalization-localization/280");
+
+    assert
+      .dom(".discourse-tags a.discourse-tag .tag-icon .d-icon")
+      .hasClass("d-icon-robot", "correct icon is shown");
+
+    assert
+      .dom(".discourse-tags a.discourse-tag")
+      .hasClass(
+        "discourse-tag--tag-icons-style",
+        "tag has icon style class applied"
+      );
   });
 });

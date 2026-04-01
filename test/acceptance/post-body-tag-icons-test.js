@@ -5,7 +5,7 @@ import TopicFixtures from "discourse/tests/fixtures/topic";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 
 function makeHashtagHTML(tag) {
-  return `<a class=\"hashtag-cooked\" href=\"${tag.href}\" data-type=\"tag\" data-slug=\"${tag.slug}\" data-id=\"${tag.id}\"><span class=\"hashtag-icon-placeholder\"><svg class=\"fa d-icon d-icon-square-full svg-icon svg-node\"><use href=\"#square-full\"></use></svg></span><span>${tag.name}</span></a>`;
+  return `<a class="hashtag-cooked" href="${tag.href}" data-type="tag" data-slug="${tag.slug}" data-id="${tag.id}"><span class="hashtag-icon-placeholder"><svg class="fa d-icon d-icon-square-full svg-icon svg-node"><use href="#square-full"></use></svg></span><span>${tag.name}</span></a>`;
 }
 
 acceptance("Post body - Tag icons", function (needs) {

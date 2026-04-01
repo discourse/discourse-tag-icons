@@ -4,27 +4,35 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { defaultRenderTag } from "discourse/lib/render-tag";
 import { contrastColor } from "../lib/colors";
 
-function iconTagRenderer(tag, params) {
-  // Get the rendered default tag markup.
-  const renderedTag = defaultRenderTag(tag, params);
-
-  // Handle both string tags (legacy) and object tags (new format: { id, name, slug })
-  // This maintains backwards compatibility with Discourse versions before PR #36678
-  const tagName = typeof tag === "string" ? tag : tag.name;
-
-  // Get the tag configuration list from the settings.
+function parseTagIconList() {
+  const slugMap = {};
   const tagIconList = settings.tag_icon_list.split("|");
 
-  // Returns the tag configuration if found.
-  const tagIconItem = tagIconList.find(
-    (line) =>
-      line.indexOf(",") > -1 &&
-      tagName.toLowerCase() === line.substr(0, line.indexOf(",")).toLowerCase()
-  );
+  tagIconList.forEach((tagIcon) => {
+    const [tagSlug, icon, color] = tagIcon.split(",");
+    if (tagSlug && icon) {
+      slugMap[tagSlug.toLowerCase()] = { icon, color };
+    }
+  });
 
-  // Update the tag markup with an SVG icon, and inline-styles for the colors.
+  return slugMap;
+}
+
+function findConfig(slugMap, tag) {
+  if (typeof tag === "object") {
+    return slugMap[tag.slug?.toLowerCase()] || slugMap[tag.name?.toLowerCase()];
+  }
+
+  return slugMap[tag.toLowerCase()];
+}
+
+function iconTagRenderer(tag, params) {
+  const renderedTag = defaultRenderTag(tag, params);
+  const slugMap = parseTagIconList();
+  const tagIconItem = findConfig(slugMap, tag);
+
   if (tagIconItem) {
-    const [, iconName, color] = tagIconItem.split(",");
+    const { icon: iconName, color } = tagIconItem;
 
     const parser = new DOMParser();
     const tagElement = parser.parseFromString(renderedTag, "text/html").body
@@ -37,7 +45,6 @@ function iconTagRenderer(tag, params) {
     tagElement.prepend(iconElement);
     tagElement.classList.add("discourse-tag--tag-icons-style");
     tagElement.style.setProperty("--color1", color ?? "");
-
     tagElement.style.setProperty("--color2", color ? contrastColor(color) : "");
 
     return tagElement.outerHTML;
@@ -47,13 +54,14 @@ function iconTagRenderer(tag, params) {
 }
 
 class TagHashtagTypeWithIcon extends TagHashtagType {
-  constructor(dict, owner) {
+  constructor(slugMap, owner) {
     super(owner);
-    this.dict = dict;
+    this.slugMap = slugMap;
   }
 
   generateIconHTML(hashtag) {
-    const opt = hashtag.slug && this.dict[hashtag.slug];
+    const opt = findConfig(this.slugMap, hashtag);
+
     if (opt) {
       const svgIcon = iconHTML(opt.icon, {
         class: `hashtag-color--${this.type}-${hashtag.id}`,
@@ -84,34 +92,22 @@ export default {
     withPluginApi((api) => {
       api.replaceTagRenderer(iconTagRenderer);
 
-      /** @type {Record<string, { icon: string, color?: string }>} */
-      const tagsMap = {};
+      const slugMap = parseTagIconList();
 
-      const tagIconList = settings.tag_icon_list.split("|");
-
-      tagIconList.forEach((tagIcon) => {
-        const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
-
-        if (tagName && prefixValue) {
-          if (api.registerCustomTagSectionLinkPrefixIcon) {
-            api.registerCustomTagSectionLinkPrefixIcon({
-              tagName,
-              prefixValue,
-              prefixColor,
-            });
-          }
-
-          tagsMap[tagName] = {
-            icon: prefixValue,
-            color: prefixColor,
-          };
+      Object.entries(slugMap).forEach(([tagSlug, { icon, color }]) => {
+        if (api.registerCustomTagSectionLinkPrefixIcon) {
+          api.registerCustomTagSectionLinkPrefixIcon({
+            tagName: tagSlug,
+            prefixValue: icon,
+            prefixColor: color,
+          });
         }
       });
 
       if (api.registerHashtagType) {
         api.registerHashtagType(
           "tag",
-          new TagHashtagTypeWithIcon(tagsMap, owner)
+          new TagHashtagTypeWithIcon(slugMap, owner)
         );
       }
     });
