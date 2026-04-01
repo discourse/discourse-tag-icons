@@ -4,51 +4,27 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { defaultRenderTag } from "discourse/lib/render-tag";
 import { contrastColor } from "../lib/colors";
 
-function parseTagIconList() {
-  const nameMap = {};
+function iconTagRenderer(tag, params) {
+  // Get the rendered default tag markup.
+  const renderedTag = defaultRenderTag(tag, params);
+
+  // Handle both string tags (legacy) and object tags (new format: { id, name, slug })
+  // This maintains backwards compatibility with Discourse versions before PR #36678
+  const tagName = typeof tag === "string" ? tag : tag.name;
+
+  // Get the tag configuration list from the settings.
   const tagIconList = settings.tag_icon_list.split("|");
 
-  tagIconList.forEach((tagIcon) => {
-    const [tagName, icon, color] = tagIcon.split(",");
-    if (tagName && icon) {
-      nameMap[tagName.toLowerCase()] = { icon, color };
-    }
-  });
+  // Returns the tag configuration if found.
+  const tagIconItem = tagIconList.find(
+    (line) =>
+      line.indexOf(",") > -1 &&
+      tagName.toLowerCase() === line.substr(0, line.indexOf(",")).toLowerCase()
+  );
 
-  return nameMap;
-}
-
-function buildIdMap(nameMap, site) {
-  const idMap = {};
-  const tags = site.topTags || [];
-
-  tags.forEach((tag) => {
-    const config =
-      (tag.slug && nameMap[tag.slug.toLowerCase()]) ||
-      nameMap[tag.name.toLowerCase()];
-    if (config) {
-      idMap[tag.id] = config;
-    }
-  });
-
-  return idMap;
-}
-
-function findConfig(idMap, nameMap, tag) {
-  if (typeof tag === "object") {
-    return idMap[tag.id];
-  }
-
-  // Legacy fallback: older Discourse versions pass tag as a string
-  return nameMap[tag.toLowerCase()];
-}
-
-function iconTagRenderer(idMap, nameMap, tag, params) {
-  const renderedTag = defaultRenderTag(tag, params);
-  const tagIconItem = findConfig(idMap, nameMap, tag);
-
+  // Update the tag markup with an SVG icon, and inline-styles for the colors.
   if (tagIconItem) {
-    const { icon: iconName, color } = tagIconItem;
+    const [, iconName, color] = tagIconItem.split(",");
 
     const parser = new DOMParser();
     const tagElement = parser.parseFromString(renderedTag, "text/html").body
@@ -61,6 +37,7 @@ function iconTagRenderer(idMap, nameMap, tag, params) {
     tagElement.prepend(iconElement);
     tagElement.classList.add("discourse-tag--tag-icons-style");
     tagElement.style.setProperty("--color1", color ?? "");
+
     tagElement.style.setProperty("--color2", color ? contrastColor(color) : "");
 
     return tagElement.outerHTML;
@@ -70,14 +47,13 @@ function iconTagRenderer(idMap, nameMap, tag, params) {
 }
 
 class TagHashtagTypeWithIcon extends TagHashtagType {
-  constructor(idMap, owner) {
+  constructor(dict, owner) {
     super(owner);
-    this.idMap = idMap;
+    this.dict = dict;
   }
 
   generateIconHTML(hashtag) {
-    const opt = this.idMap[hashtag.id];
-
+    const opt = hashtag.slug && this.dict[hashtag.slug];
     if (opt) {
       const svgIcon = iconHTML(opt.icon, {
         class: `hashtag-color--${this.type}-${hashtag.id}`,
@@ -106,31 +82,36 @@ export default {
 
   initialize(owner) {
     withPluginApi((api) => {
-      const site = api.container.lookup("service:site");
+      api.replaceTagRenderer(iconTagRenderer);
 
-      api.replaceTagRenderer((tag, params) => {
-        const nameMap = parseTagIconList();
-        const idMap = buildIdMap(nameMap, site);
-        return iconTagRenderer(idMap, nameMap, tag, params);
-      });
+      /** @type {Record<string, { icon: string, color?: string }>} */
+      const tagsMap = {};
 
-      const nameMap = parseTagIconList();
-      const idMap = buildIdMap(nameMap, site);
+      const tagIconList = settings.tag_icon_list.split("|");
 
-      Object.entries(nameMap).forEach(([tagName, { icon, color }]) => {
-        if (api.registerCustomTagSectionLinkPrefixIcon) {
-          api.registerCustomTagSectionLinkPrefixIcon({
-            tagName,
-            prefixValue: icon,
-            prefixColor: color,
-          });
+      tagIconList.forEach((tagIcon) => {
+        const [tagName, prefixValue, prefixColor] = tagIcon.split(",");
+
+        if (tagName && prefixValue) {
+          if (api.registerCustomTagSectionLinkPrefixIcon) {
+            api.registerCustomTagSectionLinkPrefixIcon({
+              tagName,
+              prefixValue,
+              prefixColor,
+            });
+          }
+
+          tagsMap[tagName] = {
+            icon: prefixValue,
+            color: prefixColor,
+          };
         }
       });
 
       if (api.registerHashtagType) {
         api.registerHashtagType(
           "tag",
-          new TagHashtagTypeWithIcon(idMap, owner)
+          new TagHashtagTypeWithIcon(tagsMap, owner)
         );
       }
     });
