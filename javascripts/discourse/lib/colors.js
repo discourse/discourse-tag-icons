@@ -13,8 +13,6 @@ const hexToRgb = (hex) => {
   }
 
   if (!/^[0-9a-fA-F]{6}$/.test(value)) {
-    // eslint-disable-next-line no-console
-    console.warn(`Invalid hex color: ${hex}`);
     return false;
   }
 
