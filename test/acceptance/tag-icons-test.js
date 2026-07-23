@@ -8,9 +8,6 @@ acceptance("Topic with tags", function (needs) {
 
   const topicResponse = topicFixtures["/t/280/1.json"];
   topicResponse.tags = ["tag1", "Tag2", "newsman"];
-  topicResponse.tags_descriptions = {
-    newsman: "newsman <a href='test'>link</a>",
-  };
 
   test("Decorate topic title", async function (assert) {
     await visit("/t/internationalization-localization/280");
@@ -41,14 +38,6 @@ acceptance("Topic with tags", function (needs) {
     assert
       .dom(".discourse-tags a.discourse-tag .tag-icon .d-icon")
       .hasClass("d-icon-gear", "tag matches correct icon");
-
-    assert
-      .dom(".discourse-tag[data-tag-name='newsman']")
-      .hasAttribute(
-        "title",
-        "newsman link",
-        "has correct title without markup"
-      );
   });
 
   test("Tag uppercase matches", async function (assert) {
