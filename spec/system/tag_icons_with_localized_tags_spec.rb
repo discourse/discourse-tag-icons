@@ -25,7 +25,6 @@ RSpec.describe "Tag icons with localized tags" do
 
   before do
     SiteSetting.tagging_enabled = true
-    SiteSetting.allow_user_locale = true
     SiteSetting.content_localization_enabled = true
     SiteSetting.content_localization_supported_locales = "en|ja"
 
